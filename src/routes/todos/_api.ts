@@ -1,15 +1,23 @@
-// TODO: Persis in database
-let todos: Todo[] = [];
+import PrismaClient from "$lib/prisma";
+import { dataset_dev } from "svelte/internal";
 
-export const api_get = () => {
+const prisma = new PrismaClient();
+
+export const api_get = async () => {
   return {
     status: 200,
-    body: todos
+    body: await prisma.todo.findMany()
   }
 }
 
-export const api_post = (request: Request, todo: Todo) => {
-  todos.push(todo);
+export const api_post = async (request: Request, todo: Todo) => {
+  const body = await prisma.todo.create({
+    data: {
+      created_at: todo.created_at,
+      done: todo.done,
+      text: todo.text
+    }
+  })
 
   if (request.headers.get("accept") !== "application/json") {
     return {
@@ -21,13 +29,18 @@ export const api_post = (request: Request, todo: Todo) => {
   } else {
     return {
       status: 201,
-      body: todo
+      body
     };
   }
 }
 
-export const api_del = (uid: string) => {
-  todos = todos.filter(todo => todo.uid !== uid)
+export const api_del = async (uid: string) => {
+  await prisma.todo.delete({
+    where: {
+      uid: uid
+    }
+  })
+
   return {
     status: 303,
     headers: {
@@ -36,14 +49,15 @@ export const api_del = (uid: string) => {
   };
 }
 
-export const api_patch = (request: Request, uid: string, data) => {
-  todos = todos.map(todo => {
-    if (todo.uid === uid) {
-      if (data.text) todo.text = data.text as string;
-      else todo.done = data.done as boolean;
-      
+export const api_patch = async (request: Request, uid: string, data) => {
+  const body = await prisma.todo.update({
+    where: {
+      uid: uid
+    },
+    data: {
+      done: data.done,
+      text: data.text ? data.text : undefined
     }
-    return todo;
   })
 
   if (request.headers.get("accept") !== "application/json") {
@@ -56,7 +70,7 @@ export const api_patch = (request: Request, uid: string, data) => {
   } else {
     return {
       status: 200,
-      body: todos.find(todo => todo.uid === uid)
+      body
     };
   }
 }
