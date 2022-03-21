@@ -3,20 +3,23 @@ import preprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
-	// Consult https://github.com/sveltejs/svelte-preprocess
-	// for more information about preprocessors
-	preprocess: preprocess(),
+  // Consult https://github.com/sveltejs/svelte-preprocess
+  // for more information about preprocessors
+  preprocess: preprocess(),
 
-	kit: {
-		adapter: adapter(),
-		vite: {
+  kit: {
+    adapter: adapter(),
+    vite: {
       server: {
         hmr: {
           clientPort: process.env.HMR_HOST ? 433 : 3000,
           host: process.env.HMR_HOST ? process.env.HMR_HOST.substring("https://".length) : "localhost"
         }
       }
-		}
+		},
+    methodOverride: {
+      allowed: ['DELETE', 'PATCH']
+    }
 	}
 };
 
