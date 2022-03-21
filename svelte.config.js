@@ -18,7 +18,7 @@ const config = {
       }
 		},
     methodOverride: {
-      allowed: ['DELETE']
+      allowed: ['DELETE', 'PATCH']
     }
 	}
 };
