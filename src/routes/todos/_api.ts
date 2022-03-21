@@ -8,14 +8,22 @@ export const api_get = () => {
   }
 }
 
-export const api_post = (todo: Todo) => {
+export const api_post = (request: Request, todo: Todo) => {
   todos.push(todo);
-  return {
-    status: 303,
-    headers: {
-      location: "/"
-    }
-  };
+
+  if (request.headers.get("accept") !== "application/json") {
+    return {
+      status: 303,
+      headers: {
+        location: "/"
+      }
+    };
+  } else {
+    return {
+      status: 201,
+      body: todo
+    };
+  }
 }
 
 export const api_del = (uid: string) => {
@@ -28,7 +36,7 @@ export const api_del = (uid: string) => {
   };
 }
 
-export const api_patch = (uid: string, data) => {
+export const api_patch = (request: Request, uid: string, data) => {
   todos = todos.map(todo => {
     if (todo.uid === uid) {
       if (data.text) todo.text = data.text as string;
@@ -37,10 +45,18 @@ export const api_patch = (uid: string, data) => {
     }
     return todo;
   })
-  return {
-    status: 303,
-    headers: {
-      location: "/"
-    }
-  };
+
+  if (request.headers.get("accept") !== "application/json") {
+    return {
+      status: 303,
+      headers: {
+        location: "/"
+      }
+    };
+  } else {
+    return {
+      status: 200,
+      body: todos.find(todo => todo.uid === uid)
+    };
+  }
 }
