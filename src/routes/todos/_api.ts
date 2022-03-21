@@ -28,11 +28,12 @@ export const api_del = (uid: string) => {
   };
 }
 
-export const api_patch = (uid: string, text: string) => {
-  console.log('text: ', text);
+export const api_patch = (uid: string, data) => {
   todos = todos.map(todo => {
     if (todo.uid === uid) {
-      todo.text = text;
+      if (data.text) todo.text = data.text as string;
+      else todo.done = data.done as boolean;
+      
     }
     return todo;
   })

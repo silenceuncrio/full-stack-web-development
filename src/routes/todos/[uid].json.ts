@@ -8,5 +8,8 @@ export const del: RequestHandler = ({ params }) => {
 
 export const patch: RequestHandler = async ({ request, params }) => {
   const data = await request.formData();
-  return api_patch(params.uid, data.get("text") as string);
+  return api_patch(params.uid, {
+    text: data.get("text"),
+    done: data.has("done") ? !!data.get("done") : undefined
+  });
 }
