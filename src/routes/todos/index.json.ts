@@ -9,7 +9,6 @@ export const post: RequestHandler = async ({ request }) => {
   const data = await request.formData();
   // console.log("header accept: ", request.headers.get("accept"));
   return api_post(request, {
-    uid: `${Date.now()}`, // TODO: Replace with the UID from the database
     created_at: new Date(),
     text: data.get("text") as string,
     done: false
